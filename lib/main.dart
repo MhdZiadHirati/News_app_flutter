@@ -10,24 +10,30 @@ import 'package:news_app/shared/bloc_observer.dart';
 import 'package:news_app/shared/constants.dart';
 import 'package:news_app/shared/network/local/cache_helper.dart';
 import 'package:news_app/shared/network/remote/dio_helper.dart';
+
 bool? darkStatueFromSharedPreferences;
-void main() async{
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   DioHelper.init();
   await CacheHelper.init();
-  darkStatueFromSharedPreferences =  CacheHelper.getBool(key: 'isDarkModeActivated');
+  darkStatueFromSharedPreferences =
+      CacheHelper.getBool(key: 'isDarkModeActivated');
   Bloc.observer = MyBlocObserver();
-  runApp( MyApp(darkFromSharedPre: darkStatueFromSharedPreferences!,));
+  runApp(MyApp(
+    darkFromSharedPre: darkStatueFromSharedPreferences,
+  ));
 }
 
 class MyApp extends StatelessWidget {
-   const MyApp({super.key,required this.darkFromSharedPre});
-   final bool? darkFromSharedPre;
+  const MyApp({super.key, required this.darkFromSharedPre});
+  final bool? darkFromSharedPre;
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-        create: (context) => NewsCubit()..getBusiness()..changeThemeMode(fromSharedPre: darkFromSharedPre),
+        create: (context) => NewsCubit()
+          ..getBusiness()
+          ..changeThemeMode(fromSharedPre: darkFromSharedPre),
         child: BlocConsumer<NewsCubit, NewsStates>(
           listener: (context, state) {},
           builder: (context, state) {
@@ -73,7 +79,6 @@ class MyApp extends StatelessWidget {
                 ),
               ),
               darkTheme: ThemeData(
-
                 scaffoldBackgroundColor: HexColor(darkModeBackGroundColorhex),
                 primarySwatch: Colors.deepOrange,
                 floatingActionButtonTheme: const FloatingActionButtonThemeData(

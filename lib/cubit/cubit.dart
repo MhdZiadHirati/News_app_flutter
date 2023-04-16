@@ -15,7 +15,7 @@ class NewsCubit extends Cubit<NewsStates> {
 
   int currentIndex = 0;
 
-  bool isDarkMode = false;
+  bool isDarkMode = true;
 
   List<BottomNavigationBarItem> items = [
     const BottomNavigationBarItem(
@@ -49,33 +49,27 @@ class NewsCubit extends Cubit<NewsStates> {
     emit(NewsBottomNavState());
   }
 
-  void changeThemeMode( {bool? fromSharedPre})
-  {
-    if(fromSharedPre != null)
-    {
-      isDarkMode = fromSharedPre ;
+  void changeThemeMode({bool? fromSharedPre}) {
+    if (fromSharedPre != null) {
+      isDarkMode = fromSharedPre;
 
       emit(NewsDarkModeState());
+    } else {
+      isDarkMode = !isDarkMode;
+
+      CacheHelper.putBool(
+              key: 'isDarkModeActivated', isDarkModeActivated: isDarkMode)
+          .then((value) {
+        emit(NewsDarkModeState());
+      });
     }
-    else
-      {
-    isDarkMode = !isDarkMode;
-
-    CacheHelper.putBool(key: 'isDarkModeActivated', isDarkModeActivated : isDarkMode)
-    .then((value)
-    {
-      emit(NewsDarkModeState());
-    });}
-
   }
 
   List business = [];
 
-  void getBusiness()
-  {
+  void getBusiness() {
     emit(NewsGetBusinessLoadingState());
-    if (business.isEmpty)
-    {
+    if (business.isEmpty) {
       DioHelper.getData(
         url: 'v1/news',
         query: {
@@ -90,11 +84,9 @@ class NewsCubit extends Cubit<NewsStates> {
         print(error.toString());
         emit(NewsGetBusinessErrorState(error.toString()));
       });
-    }
-    else
-      {
+    } else {
       emit(NewsGetBusinessSuccessState());
-      }
+    }
   }
 
   List sports = [];
@@ -149,25 +141,22 @@ class NewsCubit extends Cubit<NewsStates> {
   List search = [];
 
   void getSearch(String keyWord) {
-
     emit(NewsGetSearchLoadingState());
 
-    search = [] ;
+    search = [];
 
     DioHelper.getData(
-        url: 'v1/news',
-        query: {
-          'access_key': apiKey,
-          'keywords': keyWord,
-
-        },
-      ).then((value) {
-        search = value.data['data'];
-        emit(NewsGetSearchSuccessState());
-      }).catchError((error) {
-        print(error.toString());
-        emit(NewsGetSearchErrorState(error.toString()));
-      });
-
+      url: 'v1/news',
+      query: {
+        'access_key': apiKey,
+        'keywords': keyWord,
+      },
+    ).then((value) {
+      search = value.data['data'];
+      emit(NewsGetSearchSuccessState());
+    }).catchError((error) {
+      print(error.toString());
+      emit(NewsGetSearchErrorState(error.toString()));
+    });
   }
 }
