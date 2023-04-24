@@ -15,7 +15,7 @@ class NewsCubit extends Cubit<NewsStates> {
 
   int currentIndex = 0;
 
-  bool isDarkMode = true;
+  bool isDarkMode = CacheHelper.getBool(key: 'isDarkModeActivated') ?? false;
 
   List<BottomNavigationBarItem> items = [
     const BottomNavigationBarItem(
@@ -49,20 +49,14 @@ class NewsCubit extends Cubit<NewsStates> {
     emit(NewsBottomNavState());
   }
 
-  void changeThemeMode({bool? fromSharedPre}) {
-    if (fromSharedPre != null) {
-      isDarkMode = fromSharedPre;
+  void changeThemeMode() {
+    isDarkMode = !isDarkMode;
 
+    CacheHelper.putBool(
+            key: 'isDarkModeActivated', isDarkModeActivated: isDarkMode)
+        .then((value) {
       emit(NewsDarkModeState());
-    } else {
-      isDarkMode = !isDarkMode;
-
-      CacheHelper.putBool(
-              key: 'isDarkModeActivated', isDarkModeActivated: isDarkMode)
-          .then((value) {
-        emit(NewsDarkModeState());
-      });
-    }
+    });
   }
 
   List business = [];
